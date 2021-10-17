@@ -1,0 +1,113 @@
+@page "/FaceApi"
+@using BlazorApp.Data.Face
+@using Microsoft.Azure.CognitiveServices.Vision.Face.Models
+@using BlazorApp.Api.Face
+@using System.Reflection.Metadata.Ecma335
+@inject IFaceService _faceService
+<style>
+.img-overlay-wrap {
+        position: relative;
+        float: left;
+                }
+.img-overlay-wrap svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+</style>
+<h2>Upload and analyse a picture</h2>
+<label>
+    Upload a file:
+    <InputFile OnChange="@LoadFile"/>
+</label>
+<br/>
+<br/>
+@if (_loadedFile != null)
+{
+    <div class="img-overlay-wrap">
+        <img src="@_loadedFileAsString" alt="uploaded pic">
+
+        @if (_imageChecked)
+        {
+            <svg x="0" y="0" width="100%" height="100%">
+                @foreach (var result in _resultList)
+                {
+                    var color = "green";
+                    @if (result.DominantEmotion.Key == "Anger")
+                    {
+                        color = "red";
+                    }
+                    <rect x="@result.FaceRectangle.X" y="@result.FaceRectangle.Y" width="@result.FaceRectangle.Width" height="@result.FaceRectangle.Height" style="fill:none;stroke:@color;stroke-width:4.0;fill-opacity:0;stroke-opacity:1.0"/>
+                
+                   
+                }
+
+            </svg>
+        }
+    </div>
+
+
+    <br/>
+    <div class="row">
+
+        <div style="margin-left: 10px; float: left; position: absolute;">
+            <button @onclick='HandleAnalyseClick'> check pic </button>
+            @if (_imageChecked)
+            {
+                foreach (var result in _resultList)
+                {
+                    <h4>Age: @result.Age</h4>
+                    <h4>Gender: @result.Gender</h4>
+                    <h4>Dominant Emotion: @result.DominantEmotion</h4>
+                    <br/>
+                }
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+
+
+    private IBrowserFile? _loadedFile;
+    private string _loadedFileAsString;
+    private IList<Result> _resultList = new List<Result>();
+    private bool _imageChecked;
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+    // set all to null/empty before you start
+        ResetVariables();
+
+        try
+        {
+            _loadedFile = e.File;
+            var buffers = new byte[_loadedFile.Size];
+            await _loadedFile.OpenReadStream().ReadAsync(buffers);
+            var imageType = _loadedFile.ContentType;
+            _loadedFileAsString = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
+        }
+        catch (Exception)
+        {
+    // In case of an error, reset all variables
+            ResetVariables();
+        }
+    }
+
+    private void ResetVariables()
+    {
+        _loadedFile = null;
+        _imageChecked = false;
+        _loadedFileAsString = string.Empty;
+        _resultList.Clear();
+    }
+
+    private async Task HandleAnalyseClick()
+    {
+        _resultList = await _faceService.AnalyseFaces(RecognitionModel.Recognition04, _loadedFile);
+
+        _imageChecked = true;
+    }
+
+}
