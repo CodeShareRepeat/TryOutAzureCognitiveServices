@@ -1,0 +1,42 @@
+@page "/TextApi"
+@using BlazorApp.Api.Text
+@using static BlazorApp.Components.TextAreaInput
+@inject ITextService _textService
+<h3>TextApi</h3>
+<br/>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+.row {
+  display: flex;
+}
+.column {
+  flex: 50%;
+}
+</style>
+
+<div class="row">
+    <div class="column">
+        <BlazorApp.Components.TextAreaInput @bind-ChildData="_input" IsReadOnly="false"></BlazorApp.Components.TextAreaInput>
+        
+    </div>
+    <div class="column">
+        <BlazorApp.Components.TextAreaInput @bind-ChildData="_output" IsReadOnly="true"></BlazorApp.Components.TextAreaInput>
+    </div>
+</div>
+<br/>
+<button @onclick='HandleClick'> summarize text </button>
+
+@code {
+    private string _input = "";
+    private string? _output = "";
+
+    private async Task HandleClick()
+    {
+        _output = string.Empty;
+        _output = await _textService.SummerizeText(_input);
+    }
+
+}

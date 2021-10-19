@@ -2,7 +2,6 @@
 @using BlazorApp.Data.Face
 @using Microsoft.Azure.CognitiveServices.Vision.Face.Models
 @using BlazorApp.Api.Face
-@using System.Reflection.Metadata.Ecma335
 @inject IFaceService _faceService
 <style>
 .img-overlay-wrap {
@@ -38,8 +37,6 @@
                         color = "red";
                     }
                     <rect x="@result.FaceRectangle.X" y="@result.FaceRectangle.Y" width="@result.FaceRectangle.Width" height="@result.FaceRectangle.Height" style="fill:none;stroke:@color;stroke-width:4.0;fill-opacity:0;stroke-opacity:1.0"/>
-                
-                   
                 }
 
             </svg>
@@ -71,7 +68,7 @@
 
 
     private IBrowserFile? _loadedFile;
-    private string _loadedFileAsString;
+    private string? _loadedFileAsString;
     private IList<Result> _resultList = new List<Result>();
     private bool _imageChecked;
 

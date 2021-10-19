@@ -9,17 +9,17 @@ using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
 namespace BlazorApp.Api.Face
 {
-    public class FaceService : IFaceService
+    internal class FaceService : IFaceService
     {
         private readonly IFaceClient _client;
         
-        public FaceService(string apiEndpoint, string subscriptionKey)
+        internal FaceService(string apiEndpoint, string subscriptionKey)
         {
             _client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) {Endpoint = apiEndpoint};
+            _client.Endpoint = "";
         }
-        
-        
-        public async Task<List<Result>> AnalyseFaces( string recognitionModel, IBrowserFile imageFile)
+
+        async Task<List<Result>> IFaceService.AnalyseFaces( string recognitionModel, IBrowserFile? imageFile)
         {
             
             var faceResults = await _client.Face.DetectWithStreamAsync(imageFile.OpenReadStream(),
