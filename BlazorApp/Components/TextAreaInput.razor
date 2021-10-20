@@ -6,7 +6,7 @@
       height: 400px;
     }
 </style>
-
+<h4>@Title</h4>
 <textarea class="text" @oninput="HandleOnChange" readonly="@IsReadOnly">@_data</textarea>
 
 @code {
@@ -15,6 +15,9 @@
 
     [Parameter]
     public bool IsReadOnly { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
 
     [Parameter] public string? ChildData { get; set; }
 

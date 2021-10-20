@@ -12,17 +12,15 @@ namespace BlazorApp.Api.Face
     internal class FaceService : IFaceService
     {
         private readonly IFaceClient _client;
-        
+
         internal FaceService(string apiEndpoint, string subscriptionKey)
         {
             _client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) {Endpoint = apiEndpoint};
-            _client.Endpoint = "";
         }
 
-        async Task<List<Result>> IFaceService.AnalyseFaces( string recognitionModel, IBrowserFile? imageFile)
+        async Task<List<Result>> IFaceService.AnalyseFaces(string recognitionModel, IBrowserFile? imageFile)
         {
-            
-            var faceResults = await _client.Face.DetectWithStreamAsync(imageFile.OpenReadStream(),
+            var faceResults = await _client.Face.DetectWithStreamAsync(imageFile?.OpenReadStream(),
                 returnFaceAttributes: new List<FaceAttributeType>
 
                 {
@@ -35,16 +33,20 @@ namespace BlazorApp.Api.Face
 
 
             var resultList = new List<Result>();
-            
+
             foreach (var face in faceResults)
             {
-                resultList.Add(new Result(face.FaceAttributes.Gender, face.FaceAttributes.Age, face.FaceAttributes.Emotion.ToRankedList().First(), new Rectangle(face.FaceRectangle.Left, face.FaceRectangle.Top, face.FaceRectangle.Width, face.FaceRectangle.Height)));
+                resultList.Add(
+                    new Result(
+                        face.FaceAttributes.Gender,
+                        face.FaceAttributes.Age, face.FaceAttributes.Emotion.ToRankedList().First(),
+                        new Rectangle(face.FaceRectangle.Left, face.FaceRectangle.Top, face.FaceRectangle.Width,
+                            face.FaceRectangle.Height)
+                    )
+                );
             }
 
             return resultList;
         }
-
-
-
     }
 }
