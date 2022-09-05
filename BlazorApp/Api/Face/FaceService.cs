@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
 using BlazorApp.Data.Face;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
@@ -16,6 +13,9 @@ namespace BlazorApp.Api.Face
         internal FaceService(string apiEndpoint, string subscriptionKey)
         {
             _client = new FaceClient(new ApiKeyServiceClientCredentials(subscriptionKey)) {Endpoint = apiEndpoint};
+           
+            
+
         }
 
         async Task<List<Result>> IFaceService.AnalyseFaces(string recognitionModel, IBrowserFile? imageFile)
@@ -25,7 +25,7 @@ namespace BlazorApp.Api.Face
 
                 {
                     FaceAttributeType.Age,
-                    FaceAttributeType.Emotion,
+                   // FaceAttributeType.Emotion,
                     FaceAttributeType.Gender,
                 },
                 detectionModel: DetectionModel.Detection01,
